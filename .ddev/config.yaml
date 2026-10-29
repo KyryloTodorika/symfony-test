@@ -1,0 +1,16 @@
+name: symfony-test
+type: php
+docroot: public
+php_version: "8.2"
+webserver_type: apache-fpm
+xdebug_enabled: false
+additional_hostnames: []
+additional_fqdns: []
+database:
+    type: mariadb
+    version: "10.11"
+use_dns_when_possible: true
+composer_version: "2.8.12"
+web_environment: []
+corepack_enable: false
+disable_upload_dirs_warning: true

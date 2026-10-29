@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<main data-controller="diagnostics" data-diagnostics-url-value="{{ path('health') }}">
+    <nav><a class="brand" href="{{ path('dashboard') }}"><span class="brand-icon">s</span> Symfony <span class="muted">/ Server Test</span></a><span class="environment">{{ report.environment }} environment</span></nav>
+    <header>
+        <div><p class="eyebrow">VIRTUAL ENVIRONMENT · CONFIGURATION CHECK</p><h1>A small app.<br>A clear server check.</h1><p class="intro">Verify your PHP stack, database and application services<br class="desktop"> from one simple test environment.</p></div>
+        <div class="stack"><span class="stack-label">REFERENCE STACK</span><strong>Symfony {{ report.symfony }}</strong><span>PHP 8.2 <i>·</i> Apache / FPM</span><span>MariaDB 10.11 <i>·</i> Composer 2.8</span><small>Based on websedit-monitor</small></div>
+    </header>
+    <section class="summary" aria-label="Overall status">
+        <div><span class="signal {{ report.status }}" data-diagnostics-target="signal"></span><strong data-diagnostics-target="summary">{{ report.status == 'ok' ? 'All server checks passed' : 'Some checks need attention' }}</strong><span class="muted timestamp" data-diagnostics-target="timestamp">{{ report.checked_at }}</span></div>
+        <button type="button" data-action="diagnostics#refresh" data-diagnostics-target="button">↻ Run checks</button>
+    </section>
+    <p class="live-note" data-diagnostics-target="notice" role="status" aria-live="polite">Live checks run on every page load. Refresh to test again.</p>
+    <section class="checks" aria-label="Diagnostic checks">
+        {% for key, check in report.checks %}
+        <article class="card" data-check="{{ key }}"><div class="card-top"><span class="number">0{{ loop.index }}</span><span class="badge {{ check.status }}" data-field="status">{{ check.status == 'ok' ? 'PASS' : 'FAIL' }}</span></div><h2>{{ check.label }}</h2><p data-field="detail">{{ check.detail }}</p><footer><span>Response time</span><span data-field="duration">{{ check.duration_ms }} ms</span></footer></article>
+        {% endfor %}
+    </section>
+    <section class="details">
+        <article class="panel"><p class="eyebrow">REQUEST & ROUTING</p><h2>Your server, as Symfony sees it</h2><dl><div><dt>Host</dt><dd>{{ request.host }}</dd></div><div><dt>Protocol</dt><dd>{{ request.scheme|upper }} · {{ request.server.get('SERVER_PROTOCOL', 'unknown') }}</dd></div><div><dt>Web server</dt><dd>{{ request.server.get('SERVER_SOFTWARE', 'unknown') }}</dd></div><div><dt>Route</dt><dd>{{ request.pathInfo }} → dashboard</dd></div><div><dt>Timezone</dt><dd>{{ 'now'|date('e') }}</dd></div></dl><a class="text-link" href="{{ path('health') }}">Open JSON health endpoint ↗</a></article>
+        <article class="panel session"><p class="eyebrow">COOKIE & SESSION TEST</p><h2>Does your session persist?</h2><p>Click the button, then reload. The count should remain. This also tests POST routing, CSRF protection and redirects.</p><div class="session-count">{{ sessionCount }}<span>successful session writes</span></div><form method="post" action="{{ path('session_test') }}" data-turbo="false"><input type="hidden" name="_token" value="{{ csrf_token('session_test') }}"><button type="submit">Test session <span aria-hidden="true">→</span></button></form></article>
+    </section>
+    <footer class="page-footer"><span>Symfony Server Test <i>·</i> Isolated testing environment</span><span data-diagnostics-target="assets">Checking frontend assets…</span></footer>
+</main>
+{% endblock %}
